@@ -7,7 +7,7 @@ use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\MessageController;
 
-
+use App\Http\Controllers\FileUploadController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -41,3 +41,11 @@ Route::get("/getallReads/{id}", [MessageController::class, "getallReads"])->midd
 //get all messages not reads
 Route::get("/getallNotReads/{id}", [MessageController::class, "getallNotReads"])->middleware('auth:sanctum');
 
+
+//upload files
+Route::post('/upload/image', [FileUploadController::class, 'uploadImage']);
+Route::post('/upload/pdf', [FileUploadController::class, 'uploadPDF']);
+Route::post('/upload/any', [FileUploadController::class, 'uploadAny']);
+
+//delete files uploaded
+Route::delete('/delete/file/{id}', [FileUploadController::class, 'deleteFile']);
