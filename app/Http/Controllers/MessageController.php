@@ -60,8 +60,32 @@ class MessageController extends Controller
     }
 
 
+// seen only one message
+        function seenOneMessage(Request $request, $id, $N)
+    {
+        // Check if the message exists
+        $message = Message::where('id_user_sender', $id)
+            ->where('id_user_receiver', $request->user()->id)
+            ->where('id', $N)
+            ->first();
+
+        if (!$message) {
+            return response()->json(['message' => 'Message not found'], 404);
+        }
+
+        // Update the message status
+        if ($message->etat == 1) {
+            return response()->json(['status' => 'Messages have been seen previously'], 200);
+        }
+
+        $message->etat = 1;
+        $message->save();
+
+        return response()->json(['status' => 'Message status updated successfully (seen)'], 200);
+    }
 
 
+    // get all messages from users
     public function getallmessages($id)
     {
         $user = auth()->user();
@@ -82,4 +106,48 @@ class MessageController extends Controller
             ->get();
         return response()->json(['conversations' => $messages], 200);
     }
+
+    // get all messages reads
+    public function getallReads($id)
+    {
+        $user = auth()->user();
+        $receiver = userMess::find($id);
+        if (!$receiver) {
+            return response()->json(['message' => 'The recipient user does not exist '], 404);
+        }
+        //get all messages
+        $messages = Message::where(function ($query) use ($user, $receiver) {
+            $query->where('id_user_sender', $user->id)
+                ->where('id_user_receiver', $receiver->id)
+                ->where('etat', '1');
+        })
+
+            ->orderBy('date_envoie', 'asc')
+            ->get();
+        return response()->json(['conversations' => $messages], 200);
+    }
+
+
+
+     // get all messages reads
+     public function getallNotReads($id)
+     {
+         $user = auth()->user();
+         $receiver = userMess::find($id);
+         if (!$receiver) {
+             return response()->json(['message' => 'The recipient user does not exist '], 404);
+         }
+         //get all messages
+         $messages = Message::where(function ($query) use ($user, $receiver) {
+             $query->where('id_user_sender', $user->id)
+                 ->where('id_user_receiver', $receiver->id)
+                 ->where('etat', '0');
+         })
+
+             ->orderBy('date_envoie', 'asc')
+             ->get();
+         return response()->json(['conversations' => $messages], 200);
+     }
+
+
 }

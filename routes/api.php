@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MessageController;
 
 
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -28,9 +29,15 @@ Route::delete("/deleteUser/{id}", [UserController::class, "DeleteUser"])->middle
 
 //send message
 Route::middleware('auth:sanctum')->post('/sendMessage/{id}', [MessageController::class, "sendMessage"]);
-// seen message
+// seen all message
 Route::middleware('auth:sanctum')->post('/seenMessage/{id}', [MessageController::class, "seenMessage"]);
+// seen  one message
+Route::post('/seenOneMessage/{id}/{N}', [MessageController::class, "seenOneMessage"])->middleware('auth:sanctum');
 
 //get all messages
 Route::get("/getallmessages/{id}", [MessageController::class, "getallmessages"])->middleware('auth:sanctum');
+//get all messages reads
+Route::get("/getallReads/{id}", [MessageController::class, "getallReads"])->middleware('auth:sanctum');
+//get all messages not reads
+Route::get("/getallNotReads/{id}", [MessageController::class, "getallNotReads"])->middleware('auth:sanctum');
 
